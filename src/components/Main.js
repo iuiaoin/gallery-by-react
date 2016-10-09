@@ -91,6 +91,44 @@ class ImgFigure extends React.Component {
 }
 
 /**
+ * 控制组件
+ */
+class ControllerUnit extends React.Component {
+
+  handleClick = (e) => {
+
+    //如果点击的是当前正选中态的按钮,则翻转图片,否则将对应的图片居中
+    if(this.props.arrange.isCenter) {
+      this.props.inverse();
+    } else {
+      this.props.center();
+    }
+
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  render() {
+    var controllerUnitClassName = 'controller-unit';
+
+    //如果对应的是居中的图片,显示控制按钮的居中态
+    if (this.props.arrange.isCenter) {
+      controllerUnitClassName += ' is-center';
+
+      //如果同时对应的是翻转图片, 显示控制按钮的翻转态
+      if(this.props.arrange.isInverse) {
+        controllerUnitClassName += ' is-inverse';
+      }
+    }
+
+    return (
+      <span className={controllerUnitClassName} onClick={this.handleClick}></span>
+    );
+  }
+}
+
+
+/**
  * 舞台组件(总组件)
  */
 class GalleryByReactApp extends React.Component {
@@ -161,7 +199,7 @@ class GalleryByReactApp extends React.Component {
   }
 
   render() {
-    let contollerUnits = [],
+    let controllerUnits = [],
         imgFigures = [];
 
     imageDatas.forEach((value,index) => {
@@ -176,9 +214,14 @@ class GalleryByReactApp extends React.Component {
           isCenter: false     //是否居中
         };
       }
+
       imgFigures.push(<ImgFigure data={value} key={'imgFigure'+index} ref={
     'imgFigure' + index} arrange={this.state.imgsArrangeArr[index]} inverse={this.inverse(index)}
-     center = {this.center(index)}/>)});
+     center = {this.center(index)}/>);
+
+      controllerUnits.push(<ControllerUnit arrange={this.state.imgsArrangeArr[index]}
+      key={'unit_' + index} inverse={this.inverse(index)} center={this.center(index)}/>);
+    });
 
     return (
       <section className="stage" ref="stage">
@@ -186,7 +229,7 @@ class GalleryByReactApp extends React.Component {
           {imgFigures}
         </section>
         <nav className="controller-nav">
-          {contollerUnits}
+          {controllerUnits}
         </nav>
       </section>
     );
